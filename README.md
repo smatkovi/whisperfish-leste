@@ -30,24 +30,44 @@ The upstream README is in [README-upstream.md](README-upstream.md).
 
 ## What works
 
+This is a first, **pre-release** version. "Tested on the device" below
+means: on the Pro1X, with the package installed in a chroot of a Leste
+image, and hildon-desktop and Whisperfish on a virtual screen (Xvfb) with
+the session environment of the phone (`leste/test/chroot-test.sh`). It
+has not run on the phone's own display yet, and nobody has linked a real
+Signal account to it yet.
+
 | Feature | Status |
 |---|---|
-| Linking as a secondary device (QR code to scan with the Signal app) | The QR code comes from Signal's server and is shown (tested). Finishing a link with a real phone is **not tested yet** |
-| Database with or without a password, unlocking | Tested up to linking |
+| Linking as a secondary device (QR code to scan with the Signal app) | The QR code comes from Signal's server and is shown (tested on the device). Finishing a link with a real phone is **not tested yet** |
+| Database with or without a password | Tested on the device up to linking |
+| Unlocking an existing database with its password | Implemented, not tested |
 | Registering a new main account (phone number, captcha, code) | Implemented, not tested |
-| Conversation list (contacts, groups, note to self, drafts, unread) | Implemented; the layout is tested with made-up data |
-| Reading and sending text messages, in groups too | Implemented, not tested with an account |
+| Conversation list (contacts, groups, note to self, drafts, unread) | Implemented; the layout is tested on the device with made-up data |
+| Reading and sending text messages, in groups too | Implemented; the layout is tested with made-up data, not tested with an account |
 | Attachments: sending (file dialog), showing images, downloading and opening files | Implemented, not tested |
 | Read receipts (sent and shown), delivery ticks, edited marks | Implemented, not tested |
 | New conversation by Signal username | Implemented, not tested (no phone number lookup) |
-| Notifications of new messages (respects the privacy setting) | Implemented, not tested |
-| Settings: what notifications show, Return to send | Implemented |
-| Hildon application menu, stacked windows, title bar progress | Through Leste's `qt-platform-maemo` |
+| Notifications of new messages through hildon-home (respects the privacy setting) | Implemented, not tested |
+| Settings: what notifications show, Return to send | Implemented, tested on the PC |
+| Hildon application menu (tap on the title bar) | Tested on the device |
+| Stacked windows with the back arrow (conversation, settings, about) | **Not working yet in the device test**: the About window opened without the back arrow, and its content did not show. A fix, which makes the main window the bottom of the stack, is in but not tested yet |
+| Title bar progress indicator while busy | Implemented, not checked |
 | Calls, voice notes, reactions, replies/quotes, stickers, stories, address book, background service, the other settings | Not ported |
 
 Closing the main window quits Whisperfish. There is no background mode
 yet, so messages arrive only while the app is open (Signal keeps them for
 you meanwhile).
+
+## Screenshots
+
+On the Pro1X's Hildon (in the test chroot, see above). The last two show
+the QML with made-up data, as qmlscene shows it.
+
+| | |
+|---|---|
+| ![Database password](leste/screenshots/database-password.png) | ![Hildon application menu](leste/screenshots/hildon-app-menu.png) |
+| ![Conversations (made-up data)](leste/screenshots/conversations-made-up-data.png) | ![A conversation (made-up data)](leste/screenshots/conversation-made-up-data.png) |
 
 ## Install
 
