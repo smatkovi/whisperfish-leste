@@ -41,8 +41,9 @@ The upstream README is in [README-upstream.md](README-upstream.md).
 | Read receipts (sent and shown), delivery ticks, edited marks | Implemented, not tested |
 | New conversation by Signal username | Implemented, not tested (no phone number lookup) |
 | Notifications of new messages (respects the privacy setting) | Implemented, not tested |
+| Settings: what notifications show, Return to send | Implemented |
 | Hildon application menu, stacked windows, title bar progress | Through Leste's `qt-platform-maemo` |
-| Calls, voice notes, reactions, replies/quotes, stickers, stories, address book, background service, settings page | Not ported |
+| Calls, voice notes, reactions, replies/quotes, stickers, stories, address book, background service, the other settings | Not ported |
 
 Closing the main window quits Whisperfish. There is no background mode
 yet, so messages arrive only while the app is open (Signal keeps them for

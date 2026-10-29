@@ -197,10 +197,10 @@ Rectangle {
                     wrapMode: TextEdit.Wrap
                     onTextChanged: draftTimer.restart()
                     Keys.onReturnPressed: {
-                        if (event.modifiers & Qt.ShiftModifier) {
-                            event.accepted = false
-                        } else {
+                        if (SettingsBridge.enable_enter_send && !(event.modifiers & Qt.ShiftModifier)) {
                             root.send()
+                        } else {
+                            event.accepted = false
                         }
                     }
                 }

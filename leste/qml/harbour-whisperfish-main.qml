@@ -38,17 +38,19 @@ Rectangle {
         step = s
         Hildon.setBusy(windowId, s === "starting")
         if (s === "main") {
-            Hildon.setMenu(windowId, [qsTr("New conversation"), qsTr("About")])
+            Hildon.setMenu(windowId, [qsTr("New conversation"), qsTr("Settings"), qsTr("About")])
         } else {
             Hildon.setMenu(windowId, [qsTr("About")])
         }
     }
 
     function hildonMenuTriggered(index) {
-        var entry = step === "main" ? index : index + 1
+        var entry = step === "main" ? index : index + 2
         if (entry === 0) {
             Hildon.openWindow(Qt.resolvedUrl("NewConversationWindow.qml"), {}, qsTr("New conversation"))
         } else if (entry === 1) {
+            Hildon.openWindow(Qt.resolvedUrl("SettingsWindow.qml"), {}, qsTr("Settings"))
+        } else if (entry === 2) {
             Hildon.openWindow(Qt.resolvedUrl("AboutWindow.qml"), {}, qsTr("About Whisperfish"))
         }
     }
