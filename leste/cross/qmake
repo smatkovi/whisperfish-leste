@@ -1,0 +1,33 @@
+#!/bin/sh
+# qmake stand-in for cross builds: the build scripts of qttypes/qmetaobject
+# and whisperfish only run `qmake -query VAR`; answer with the paths of the
+# arm64 sysroot (Debian bookworm / Maemo Leste daedalus layout).
+: "${LESTE_SYSROOT:?set LESTE_SYSROOT to the arm64 sysroot}"
+q() {
+	case "$1" in
+	QT_VERSION) echo 5.15.8 ;;
+	QT_INSTALL_PREFIX) echo "$LESTE_SYSROOT/usr" ;;
+	QT_INSTALL_HEADERS) echo "$LESTE_SYSROOT/usr/include/aarch64-linux-gnu/qt5" ;;
+	QT_INSTALL_LIBS) echo "$LESTE_SYSROOT/usr/lib/aarch64-linux-gnu" ;;
+	QT_INSTALL_ARCHDATA) echo "$LESTE_SYSROOT/usr/lib/aarch64-linux-gnu/qt5" ;;
+	QT_INSTALL_PLUGINS) echo "$LESTE_SYSROOT/usr/lib/aarch64-linux-gnu/qt5/plugins" ;;
+	QT_INSTALL_QML) echo "$LESTE_SYSROOT/usr/lib/aarch64-linux-gnu/qt5/qml" ;;
+	QT_INSTALL_BINS) echo "$LESTE_SYSROOT/usr/lib/qt5/bin" ;;
+	QT_INSTALL_DATA) echo "$LESTE_SYSROOT/usr/share/qt5" ;;
+	QMAKE_SPEC | QMAKE_XSPEC) echo linux-g++ ;;
+	*) return 1 ;;
+	esac
+}
+if [ "$1" = "-query" ]; then
+	if [ -n "$2" ]; then
+		q "$2" || exit 1
+	else
+		for v in QT_VERSION QT_INSTALL_PREFIX QT_INSTALL_HEADERS QT_INSTALL_LIBS \
+			QT_INSTALL_ARCHDATA QT_INSTALL_PLUGINS QT_INSTALL_QML QT_INSTALL_BINS QT_INSTALL_DATA; do
+			echo "$v:$(q $v)"
+		done
+	fi
+	exit 0
+fi
+echo "qmake (cross stand-in): only -query is supported" >&2
+exit 1

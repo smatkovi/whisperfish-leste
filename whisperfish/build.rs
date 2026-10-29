@@ -145,6 +145,7 @@ fn main() {
     let contains_cpp = [
         "config/settings.rs",
         "lib.rs",
+        "platform.rs",
         "qblurhashimageprovider.rs",
         "qrustlegraphimageprovider.rs",
     ];

@@ -230,7 +230,9 @@ fn main() -> anyhow::Result<()> {
 
         // If verbose, print to terminal (with timestamps and tracing).
         // Otherwise, send to journald (without tracing).
-        if opt.verbose > 0 {
+        // Systems without journald (Maemo Leste/Devuan) log to stderr.
+        let have_journald = std::path::Path::new("/run/systemd/journal/socket").exists();
+        if opt.verbose > 0 || !have_journald {
             tracing_subscriber::registry()
                 .with(env_filter)
                 .with(tracing_subscriber::fmt::layer())

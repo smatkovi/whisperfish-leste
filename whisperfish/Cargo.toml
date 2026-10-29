@@ -129,6 +129,8 @@ calling = [
 voice-note-transcription = ["dep:dbus", "dep:dbus-tokio"]
 voice-note-recording = ["_gstreamer"]
 harbour = ["sailfish"]
+# Maemo Leste (Hildon): QApplication + QtQuick.Controls 1 UI, no Sailfish libraries
+leste = ["bundled-sqlcipher", "bundled-openssl"]
 
 _gstreamer = ["dep:gstreamer"]
 

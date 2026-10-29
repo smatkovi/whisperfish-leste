@@ -221,6 +221,19 @@ impl Prompt {
     #[with_executor]
     #[tracing::instrument(skip(self))]
     fn startCaptcha(&mut self) {
+        // No sailfish-qml captcha helper on Maemo Leste: open the captcha
+        // page in the browser; the signalcaptcha:// link is pasted back.
+        #[cfg(feature = "leste")]
+        {
+            if let Err(e) = Command::new("xdg-open")
+                .arg("https://signalcaptchas.org/registration/generate.html")
+                .spawn()
+            {
+                tracing::error!("Cannot open the captcha page: {e}");
+            }
+            return;
+        }
+        #[cfg(not(feature = "leste"))]
         Command::new("/usr/bin/sailfish-qml")
             .args(["harbour-whisperfish"])
             .spawn()

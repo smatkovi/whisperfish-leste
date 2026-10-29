@@ -28,8 +28,11 @@ tracing-flame = { version = "0.2", optional = true }
 
 [features]
 bundled-sqlcipher = ["whisperfish/bundled-sqlcipher"]
+bundled-openssl = ["whisperfish/bundled-openssl"]
 sailfish = ["whisperfish/sailfish"]
 harbour = ["whisperfish/harbour"]
+# Maemo Leste (Hildon): QApplication + QtQuick.Controls 1 UI, no Sailfish libraries
+leste = ["whisperfish/leste", "bundled-sqlcipher", "bundled-openssl"]
 
 daemon-mode = ["dep:dbus"]
 
