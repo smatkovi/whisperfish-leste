@@ -4,14 +4,16 @@ mod sailfish_inner {
 }
 
 // Maemo Leste (Hildon): a plain QApplication (so that QtQuick.Controls 1
-// renders through the Maemo 5 QStyle) with a QQmlApplicationEngine, from
-// qmetaobject's QmlEngine. The QML lives in /usr/share/harbour-whisperfish
-// (or $WHISPERFISH_QML_ROOT when running from the source tree).
+// renders through the Maemo 5 QStyle) with the QML engine of qmetaobject's
+// QmlEngine; the windows are QMainWindows with QQuickWidgets (see leste.rs).
+// The QML lives in /usr/share/harbour-whisperfish, or in
+// $WHISPERFISH_QML_ROOT when running from the source tree.
 #[cfg(all(feature = "leste", not(feature = "sailfish")))]
 mod sailfish_inner {
     use cpp::cpp;
     use qmetaobject::prelude::*;
-    use qmetaobject::{QObjectPinned, QmlEngine};
+    use qmetaobject::qtcore::core_application::QCoreApplication;
+    use qmetaobject::QObjectPinned;
 
     cpp! {{
         #include <QtCore/QCoreApplication>
@@ -30,6 +32,7 @@ mod sailfish_inner {
 
     pub struct QmlApp {
         engine: QmlEngine,
+        title: QString,
     }
 
     pub fn data_root() -> String {
@@ -40,12 +43,12 @@ mod sailfish_inner {
     impl QmlApp {
         pub fn application(app: String) -> Self {
             let engine = QmlEngine::new();
-            let app = QString::from(app);
-            cpp!(unsafe [app as "QString"] {
-                QCoreApplication::setApplicationName(app);
-                QCoreApplication::setOrganizationName(QStringLiteral("be.rubdos"));
-            });
-            QmlApp { engine }
+            QCoreApplication::set_application_name(app.into());
+            QCoreApplication::set_organization_name("be.rubdos".into());
+            QmlApp {
+                engine,
+                title: QString::default(),
+            }
         }
 
         pub fn path_to(path: String) -> String {
@@ -65,15 +68,11 @@ mod sailfish_inner {
         }
 
         pub fn set_title(&mut self, title: QString) {
-            cpp!(unsafe [title as "QString"] {
-                QGuiApplication::setApplicationDisplayName(title);
-            });
+            self.title = title;
         }
 
         pub fn set_application_version(&mut self, version: QString) {
-            cpp!(unsafe [version as "QString"] {
-                QCoreApplication::setApplicationVersion(version);
-            });
+            QCoreApplication::set_application_version(version);
         }
 
         pub fn install_default_translator(&mut self) -> Option<()> {
@@ -89,11 +88,9 @@ mod sailfish_inner {
             Some(())
         }
 
-        pub fn set_quit_on_last_window_closed(&mut self, quit: bool) {
-            cpp!(unsafe [quit as "bool"] {
-                QGuiApplication::setQuitOnLastWindowClosed(quit);
-            });
-        }
+        // Closing the main window ends the application (Qt's default):
+        // there is no background mode on Leste yet.
+        pub fn set_quit_on_last_window_closed(&mut self, _quit: bool) {}
 
         pub fn promote_gui_app_to_qml_context(&mut self, name: QString) {
             let engine = self.engine.cpp_ptr();
@@ -103,10 +100,11 @@ mod sailfish_inner {
         }
 
         pub fn set_source(&mut self, source: String) {
-            self.engine.load_file(source.into());
+            crate::leste::set_engine(self.engine());
+            crate::leste::open_window(source.into(), QVariant::default(), self.title.clone());
         }
 
-        // The root item is a visible Window; hildon-desktop maximises it.
+        // hildon-desktop maximises the window.
         pub fn show_full_screen(&mut self) {}
 
         pub fn exec(self) {

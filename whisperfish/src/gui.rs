@@ -429,6 +429,10 @@ pub fn run(config: crate::config::SignalConfig) -> Result<(), anyhow::Error> {
         app.set_object_property("ContactModel".into(), whisperfish.contact_model.pinned());
         app.set_object_property("SetupWorker".into(), whisperfish.setup_worker.pinned());
         app.set_object_property("AppState".into(), whisperfish.app_state.pinned());
+        #[cfg(feature = "leste")]
+        let hildon = QObjectBox::new(crate::leste::HildonShell::default());
+        #[cfg(feature = "leste")]
+        app.set_object_property("Hildon".into(), hildon.pinned());
 
         // We need to decied when to close the app based on the current setup state and
         // background service configuration. We do that in QML in the lastWindowClosed signal

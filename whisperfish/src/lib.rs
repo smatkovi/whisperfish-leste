@@ -2,6 +2,8 @@
 
 pub mod config;
 pub mod gui;
+#[cfg(feature = "leste")]
+pub mod leste;
 pub mod methods;
 pub mod model;
 pub mod platform;

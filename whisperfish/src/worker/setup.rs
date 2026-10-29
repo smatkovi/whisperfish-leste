@@ -381,7 +381,11 @@ impl SetupWorker {
         let (tx_uri, rx_uri) = futures::channel::oneshot::channel();
 
         let res_fut = app.client_actor.send(super::client::RegisterLinked {
-            device_name: String::from("Whisperfish"),
+            device_name: String::from(if cfg!(feature = "leste") {
+                "Whisperfish (Maemo Leste)"
+            } else {
+                "Whisperfish"
+            }),
             password,
             storage_password,
             tx_uri,

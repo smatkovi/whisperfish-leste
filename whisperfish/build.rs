@@ -138,12 +138,19 @@ fn main() {
         // -W deprecated-copy triggers some warnings in old Jolla's Qt distribution.
         // It is annoying to look at while developing, and we cannot do anything about it
         // ourselves.
-        .flag("-Wno-deprecated-copy")
-        .build("src/lib.rs");
+        .include(format!("{}/src", env!("CARGO_MANIFEST_DIR")))
+        .flag("-Wno-deprecated-copy");
+    // Maemo Leste: the Hildon shell (src/leste.rs) uses QtWidgets,
+    // QtQuickWidgets and QtDBus.
+    #[cfg(feature = "leste")]
+    cfg.flag("-DWHISPERFISH_LESTE");
+    cfg.build("src/lib.rs");
 
     // Add lib.rs to the list, because it's the root of the CPP tree
     let contains_cpp = [
         "config/settings.rs",
+        "leste.rs",
+        "leste_shell.h",
         "lib.rs",
         "platform.rs",
         "qblurhashimageprovider.rs",
@@ -160,7 +167,10 @@ fn main() {
     };
     let macos_lib_framework = if cfg!(target_os = "macos") { "" } else { "5" };
 
+    #[cfg(not(feature = "leste"))]
     let qt_libs = ["Gui", "Core", "Quick", "Qml"];
+    #[cfg(feature = "leste")]
+    let qt_libs = ["Gui", "Core", "Quick", "Qml", "Widgets", "QuickWidgets", "DBus"];
     for lib in &qt_libs {
         println!(
             "cargo:rustc-link-lib{}=Qt{}{}",
