@@ -75,7 +75,7 @@ Download `whisperfish-leste_*_arm64.deb` from the
 [releases](https://github.com/smatkovi/whisperfish-leste/releases) and,
 as root on the device:
 
-    apt install ./whisperfish-leste_0.6.0~dev-1_arm64.deb
+    apt install ./whisperfish-leste_0.6.0.dev-1_arm64.deb
 
 Whisperfish then shows up in the application menu. On first start it
 asks for a database password (or none). Choose "Link to my Signal
