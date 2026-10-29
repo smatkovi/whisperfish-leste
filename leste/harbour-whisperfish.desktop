@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=Whisperfish
+Comment=Signal messenger
+GenericName=Signal
+Exec=/usr/bin/harbour-whisperfish
+Icon=harbour-whisperfish
+Categories=Network;InstantMessaging;
+X-Osso-Type=application/x-executable
+StartupWMClass=harbour-whisperfish

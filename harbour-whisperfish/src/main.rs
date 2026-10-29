@@ -224,20 +224,20 @@ fn main() -> anyhow::Result<()> {
         }
         let env_filter = EnvFilter::from_default_env();
 
-        let journald = tracing_journald::layer()
-            .expect("open journald socket")
-            .with_syslog_identifier("harbour-whisperfish".into());
-
         // If verbose, print to terminal (with timestamps and tracing).
         // Otherwise, send to journald (without tracing).
         // Systems without journald (Maemo Leste/Devuan) log to stderr.
         let have_journald = std::path::Path::new("/run/systemd/journal/socket").exists();
         if opt.verbose > 0 || !have_journald {
+            use std::io::IsTerminal;
             tracing_subscriber::registry()
                 .with(env_filter)
-                .with(tracing_subscriber::fmt::layer())
+                .with(tracing_subscriber::fmt::layer().with_ansi(std::io::stdout().is_terminal()))
                 .init();
         } else {
+            let journald = tracing_journald::layer()
+                .expect("open journald socket")
+                .with_syslog_identifier("harbour-whisperfish".into());
             tracing_subscriber::registry()
                 .with(env_filter)
                 .with(journald)

@@ -1,0 +1,14 @@
+module be.rubdos.whisperfish
+singleton SetupWorker 1.0 SetupWorker.qml
+singleton ClientWorker 1.0 ClientWorker.qml
+singleton Prompt 1.0 Prompt.qml
+singleton Hildon 1.0 Hildon.qml
+singleton AppState 1.0 AppState.qml
+singleton SettingsBridge 1.0 SettingsBridge.qml
+singleton MessageModel 1.0 MessageModel.qml
+singleton SessionModel 1.0 SessionModel.qml
+Sessions 1.0 Sessions.qml
+Session 1.0 Session.qml
+Recipient 1.0 Recipient.qml
+Message 1.0 Message.qml
+CreateConversation 1.0 CreateConversation.qml

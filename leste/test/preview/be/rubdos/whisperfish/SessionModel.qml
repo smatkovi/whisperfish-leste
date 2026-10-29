@@ -1,0 +1,3 @@
+pragma Singleton
+import QtQuick 2.6
+QtObject { function saveDraft(sid, text) {} }
