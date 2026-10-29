@@ -11,14 +11,16 @@
 #   STEPS="shot:start click:600,500 sleep:5 shot:next" \
 #       bash leste/test/chroot-test.sh whisperfish-leste_*_arm64.deb
 #
-# Steps: shot:NAME (xwd of the screen into $W/shots/NAME.xwd),
-# sleep:SECONDS, click:X,Y, key:KEYSYM, type:TEXT.
+# Steps: start (Whisperfish), preview:NAME (instead: leste/test/preview/
+# NAME.qml with made-up data, in qmlscene), shot:NAME (xwd of the screen
+# into $W/shots/NAME.xwd), sleep:SECONDS, click:X,Y, key:KEYSYM, type:TEXT.
 # FRESH=1 starts with an empty home directory (no Signal data).
 set -euo pipefail
 DEB=$(readlink -f "${1:?usage: chroot-test.sh package.deb}")
+SRC=$(cd "$(dirname "$0")/../.." && pwd)
 LOWER=${LOWER:-/host/meego-leste.img}
 W=${W:-/host/wf-leste}
-STEPS=${STEPS:-"sleep:40 shot:start"}
+STEPS=${STEPS:-"start sleep:40 shot:start"}
 SIZE=${SIZE:-2160x1080}
 FRESH=${FRESH:-1}
 
@@ -46,6 +48,10 @@ cp -L /etc/resolv.conf "$R/etc/resolv.conf"
 printf '#!/bin/sh\nexit 101\n' > "$R/usr/sbin/policy-rc.d"
 chmod 755 "$R/usr/sbin/policy-rc.d"
 cp "$DEB" "$R/tmp/whisperfish-leste.deb"
+rm -rf "${R:?}/tmp/wf-preview"
+mkdir -p "$R/tmp/wf-preview/leste/test"
+cp -r "$SRC/leste/qml" "$R/tmp/wf-preview/leste/qml"
+cp -r "$SRC/leste/test/preview" "$R/tmp/wf-preview/leste/test/preview"
 
 chroot "$R" /bin/bash -euo pipefail <<'SETUP'
 export DEBIAN_FRONTEND=noninteractive
@@ -53,7 +59,7 @@ apt-get update -qq || true
 # the dependencies, then the package itself (again, if its version did
 # not change)
 apt-get install -y -qq --no-install-recommends /tmp/whisperfish-leste.deb \
-	qt5-style-plugins qt-platform-maemo xvfb x11-apps x11-utils xdotool dbus-x11 hildon-desktop > /tmp/apt.log 2>&1 ||
+	qt5-style-plugins qt-platform-maemo xvfb x11-apps x11-utils xdotool dbus-x11 hildon-desktop qmlscene > /tmp/apt.log 2>&1 ||
 	{ tail -30 /tmp/apt.log; exit 1; }
 dpkg -i /tmp/whisperfish-leste.deb > /dev/null
 dpkg -l whisperfish-leste | tail -1
@@ -80,11 +86,17 @@ hdbin=hildon-desktop
 \$hdbin > /tmp/hildon-desktop.log 2>&1 &
 hd=\$!
 sleep 10
-harbour-whisperfish > /tmp/whisperfish.log 2>&1 &
-wf=\$!
+wf=
 for s in $STEPS; do
 	a=\${s%%:*}; v=\${s#*:}
 	case \$a in
+	start)
+		harbour-whisperfish > /tmp/whisperfish.log 2>&1 &
+		wf=\$! ;;
+	preview)
+		[ -z "\$wf" ] || { kill \$wf; wait \$wf 2> /dev/null || true; }
+		qmlscene -I /tmp/wf-preview/leste/test/preview /tmp/wf-preview/leste/test/preview/\$v.qml > /tmp/preview-\$v.log 2>&1 &
+		wf=\$! ;;
 	shot) xwd -root -silent > /tmp/wf-shots/\$v.xwd; echo "shot \$v" ;;
 	sleep) sleep "\$v" ;;
 	click) xdotool mousemove \${v%,*} \${v#*,} click 1; sleep 2 ;;
@@ -96,7 +108,8 @@ echo "--- windows"; xwininfo -root -tree | grep -v "has no name" | head -20
 echo "--- whisperfish.log"; tail -40 /tmp/whisperfish.log
 echo "--- hildon-desktop.log"; tail -15 /tmp/hildon-desktop.log
 if kill -0 \$hd 2> /dev/null; then echo "hildon-desktop running"; else echo "hildon-desktop ended"; fi
-if kill -0 \$wf 2> /dev/null; then echo "whisperfish running"; else echo "whisperfish ended"; fi
+if [ -n "\$wf" ] && kill -0 \$wf 2> /dev/null; then echo "app running"; else echo "app ended"; fi
+tail -5 /tmp/preview-*.log 2> /dev/null || true
 kill \$wf \$hd \$xvfb 2> /dev/null || true
 sleep 2
 RUN
