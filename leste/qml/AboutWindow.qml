@@ -22,12 +22,12 @@ Rectangle {
                           + "interface. Licensed under the GNU AGPL v3.\n\n"
                           + "Signal is a trademark of Signal Messenger, LLC; Whisperfish is not "
                           + "affiliated with it.")
-        Button {
+        HButton {
             text: qsTr("Whisperfish")
             Layout.fillWidth: true
             onClicked: Qt.openUrlExternally("https://gitlab.com/whisperfish/whisperfish")
         }
-        Button {
+        HButton {
             text: qsTr("This port")
             Layout.fillWidth: true
             onClicked: Qt.openUrlExternally("https://github.com/smatkovi/whisperfish-leste")

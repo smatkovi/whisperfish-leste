@@ -184,7 +184,7 @@ Rectangle {
                 spacing: unit / 2
                 visible: root.canSend
 
-                Button {
+                HButton {
                     text: qsTr("Attach")
                     Layout.fillHeight: true
                     onClicked: fileDialog.open()
@@ -205,7 +205,7 @@ Rectangle {
                     }
                 }
 
-                Button {
+                HButton {
                     text: qsTr("Send")
                     Layout.fillHeight: true
                     enabled: input.text.trim().length > 0 || root.attachments.length > 0

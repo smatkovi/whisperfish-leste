@@ -40,7 +40,7 @@ Rectangle {
             placeholderText: qsTr("Username")
             onAccepted: startButton.clicked()
         }
-        Button {
+        HButton {
             id: startButton
             text: qsTr("Start")
             Layout.fillWidth: true

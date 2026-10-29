@@ -163,12 +163,12 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true
             spacing: unit
-            Button {
+            HButton {
                 text: qsTr("No password")
                 Layout.fillWidth: true
                 onClicked: { Prompt.password(""); setStep("starting") }
             }
-            Button {
+            HButton {
                 id: savePassword
                 text: qsTr("Save")
                 Layout.fillWidth: true
@@ -194,7 +194,7 @@ Rectangle {
             placeholderText: qsTr("Password")
             onAccepted: unlockButton.clicked()
         }
-        Button {
+        HButton {
             id: unlockButton
             text: qsTr("Unlock")
             Layout.fillWidth: true
@@ -211,12 +211,12 @@ Rectangle {
         visible: step === "registrationType"
         title: qsTr("Welcome to Whisperfish")
         description: qsTr("Whisperfish works best as a linked device of the Signal app on your phone, like Signal Desktop.")
-        Button {
+        HButton {
             text: qsTr("Link to my Signal account")
             Layout.fillWidth: true
             onClicked: { Prompt.registerAsPrimary(false); setStep("starting") }
         }
-        Button {
+        HButton {
             text: qsTr("Register a new account")
             Layout.fillWidth: true
             onClicked: { Prompt.registerAsPrimary(true); setStep("starting") }
@@ -256,7 +256,7 @@ Rectangle {
             placeholderText: "+"
             onAccepted: phoneButton.clicked()
         }
-        Button {
+        HButton {
             id: phoneButton
             text: qsTr("Continue")
             Layout.fillWidth: true
@@ -273,7 +273,7 @@ Rectangle {
         visible: step === "captcha"
         title: qsTr("Captcha")
         description: qsTr("Signal wants a captcha. Solve it in the browser, then copy the address of the “Open Signal” link (signalcaptcha://…) and paste it here.")
-        Button {
+        HButton {
             text: qsTr("Open the captcha page")
             Layout.fillWidth: true
             onClicked: Prompt.startCaptcha()
@@ -283,7 +283,7 @@ Rectangle {
             Layout.fillWidth: true
             placeholderText: "signalcaptcha://"
         }
-        Button {
+        HButton {
             text: qsTr("Continue")
             Layout.fillWidth: true
             enabled: captchaToken.text.indexOf("signalcaptcha://") === 0
@@ -301,7 +301,7 @@ Rectangle {
             inputMethodHints: Qt.ImhDigitsOnly
             onAccepted: verifyButton.clicked()
         }
-        Button {
+        HButton {
             id: verifyButton
             text: qsTr("Verify")
             Layout.fillWidth: true
@@ -314,7 +314,7 @@ Rectangle {
         visible: step === "error"
         title: qsTr("Whisperfish cannot start")
         description: errorText !== "" ? errorText : qsTr("This device is not registered.")
-        Button {
+        HButton {
             text: qsTr("Close")
             Layout.fillWidth: true
             onClicked: Qt.quit()

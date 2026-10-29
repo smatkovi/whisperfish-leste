@@ -31,6 +31,11 @@ FRESH=${FRESH:-1}
 R=$W/root
 mkdir -p "$W/lower" "$W/upper" "$W/work" "$R" "$W/shots"
 cleanup() {
+	# whatever still runs in the chroot (dbus, sapwood-server, maemo-launcher)
+	for p in /proc/[0-9]*; do
+		[ "$(readlink "$p/root" 2> /dev/null)" = "$R" ] && kill "${p#/proc/}" 2> /dev/null
+	done
+	sleep 1
 	for m in dev/pts dev sys proc; do
 		! mountpoint -q "$R/$m" || umount "$R/$m" || umount -l "$R/$m"
 	done
@@ -80,12 +85,18 @@ export QT_STYLE_OVERRIDE=maemo5 QT_QUICK_BACKEND=software LIBGL_ALWAYS_SOFTWARE=
 Xvfb :7 -screen 0 ${SIZE}x24 -noreset -nolisten tcp > /tmp/xvfb.log 2>&1 &
 xvfb=\$!
 sleep 3
-# /usr/bin/hildon-desktop is maemo-invoker, which needs maemo-launcher
-hdbin=hildon-desktop
-[ ! -x /usr/bin/hildon-desktop.launch ] || hdbin=/usr/bin/hildon-desktop.launch
-\$hdbin > /tmp/hildon-desktop.log 2>&1 &
+# what the Xsession starts before hildon-desktop: a system bus (of the
+# chroot only), the theme's sapwood-server and maemo-launcher, through
+# which hildon-desktop (maemo-invoker) runs
+mkdir -p /run/dbus
+dbus-daemon --system --fork 2> /dev/null || true
+/usr/lib/aarch64-linux-gnu/sapwood/sapwood-server > /tmp/sapwood.log 2>&1 &
+sleep 1
+/usr/bin/maemo-launcher --send-app-died --booster gtk,cpp --quiet --daemon
+sleep 2
+hildon-desktop > /tmp/hildon-desktop.log 2>&1 &
 hd=\$!
-sleep 10
+sleep 15
 wf=
 for s in $STEPS; do
 	a=\${s%%:*}; v=\${s#*:}

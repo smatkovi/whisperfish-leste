@@ -8,6 +8,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QUrl>
 #include <QtCore/QDebug>
+#include <QtGui/QGuiApplication>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtQml/QQmlEngine>
@@ -45,10 +46,11 @@ static int wf_open_window(const QUrl &url, const QVariantMap &props, const QStri
     const int id = wf_next_window++;
     QMainWindow *parent = id == 0 ? nullptr : wf_window(0);
     QMainWindow *w = new QMainWindow(parent);
-    if (parent) {
+    // All of them stackable: the main window is the bottom of the stack
+    // (position 0), so that the ones above get the back arrow.
+    w->setProperty("X-Maemo-StackedWindow", 1);
+    if (parent)
         w->setAttribute(Qt::WA_DeleteOnClose);
-        w->setProperty("X-Maemo-StackedWindow", 1);
-    }
     w->setWindowTitle(title);
     wf_windows.insert(id, w);
     QObject::connect(w, &QObject::destroyed, [id]() { wf_windows.remove(id); });
@@ -83,6 +85,10 @@ static void wf_set_menu(int id, const QStringList &items)
         return;
     QMenuBar *bar = w->menuBar();
     bar->clear();
+    // The Maemo platform plugin turns the actions into the application
+    // menu (tap on the title bar); the bar itself only shows elsewhere.
+    if (QGuiApplication::platformName().startsWith(QLatin1String("maemo")))
+        bar->setVisible(false);
     for (int i = 0; i < items.size(); ++i) {
         QAction *a = bar->addAction(items[i]);
         QObject::connect(a, &QAction::triggered, [id, i]() {
