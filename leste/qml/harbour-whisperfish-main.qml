@@ -115,7 +115,7 @@ Rectangle {
             setStep("phoneNumber")
         }
         function onClientFailed() {
-            errorText = qsTr("Could not connect to the Signal server.")
+            errorText = qsTr("Setting up failed: a wrong password, or no connection to Signal. Start Whisperfish again to retry.")
             setStep("error")
         }
     }

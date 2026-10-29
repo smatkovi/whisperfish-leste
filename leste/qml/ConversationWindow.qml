@@ -44,12 +44,20 @@ Rectangle {
         id: markReadTimer
         interval: 500
         onTriggered: {
+            // only what the user can see: wait while the window is not active
+            if (Qt.application.state !== Qt.ApplicationActive) {
+                return
+            }
             var ids = Object.keys(root.toMarkRead)  // strings, as the worker expects
             root.toMarkRead = {}
-            if (ids.length > 0 && Qt.application.state === Qt.ApplicationActive) {
+            if (ids.length > 0) {
                 ClientWorker.mark_messages_read(ids)
             }
         }
+    }
+    Connections {
+        target: Qt.application
+        function onStateChanged() { markReadTimer.restart() }
     }
 
     function mimeType(path) {
