@@ -74,7 +74,10 @@ export QT_STYLE_OVERRIDE=maemo5 QT_QUICK_BACKEND=software LIBGL_ALWAYS_SOFTWARE=
 Xvfb :7 -screen 0 ${SIZE}x24 -noreset -nolisten tcp > /tmp/xvfb.log 2>&1 &
 xvfb=\$!
 sleep 3
-hildon-desktop > /tmp/hildon-desktop.log 2>&1 &
+# /usr/bin/hildon-desktop is maemo-invoker, which needs maemo-launcher
+hdbin=hildon-desktop
+[ ! -x /usr/bin/hildon-desktop.launch ] || hdbin=/usr/bin/hildon-desktop.launch
+\$hdbin > /tmp/hildon-desktop.log 2>&1 &
 hd=\$!
 sleep 10
 harbour-whisperfish > /tmp/whisperfish.log 2>&1 &

@@ -1,155 +1,104 @@
-# Whisperfish
+# Whisperfish for Maemo Leste
 
-Whisperfish is a native [Signal](https://www.whispersystems.org/) client
-for [Sailfish OS](https://sailfishos.org/). The user interface is
-heavily based on the jolla-messages application written by Jolla Ltd.
+This is a port of [Whisperfish](https://gitlab.com/whisperfish/whisperfish),
+the unofficial [Signal](https://signal.org) client for Sailfish OS, to
+[Maemo Leste](https://maemo-leste.github.io/), with a Hildon (Maemo 5)
+user interface. It was made for the F(x)tec Pro1X, but it should run on
+any arm64 Leste device.
 
-Whisperfish has plenty of features these days and is in a mostly usable state,
-but having a Signal Destop as a linked device is highly recommened.
-Join our development channel on Matrix
-([#whisperfish:rubdos.be](https://matrix.to/#/#whisperfish:rubdos.be))
-or Libera.Chat (#whisperfish) to get in touch, and check
-[our wiki](https://gitlab.com/whisperfish/whisperfish/-/wikis/home) to see
-whether Whisperfish would work for you.
+All the Signal work is done by Whisperfish's Rust backend (libsignal,
+the message store and the actors), unchanged from upstream. The port
+replaces only the Sailfish parts:
 
-To install, you have two options:
+- **User interface.** The Sailfish Silica QML is replaced by a smaller UI
+  in `leste/qml`, built on QtQuick.Controls 1, so that Leste's Maemo 5
+  Qt style draws the controls. Every page is a `QMainWindow` with a
+  `QQuickWidget` (`whisperfish/src/leste.rs`). With Leste's Qt platform
+  plugin, the main window's menu bar becomes the Hildon application menu,
+  conversations open as stacked windows with the back arrow, and the
+  title bar shows the progress indicator while Whisperfish is busy.
+- **Application shell.** Instead of libsailfishapp there is a plain
+  `QApplication` (the `leste` cargo feature in `whisperfish/src/platform.rs`).
+- **Notifications.** New messages are shown through hildon-home
+  (`org.freedesktop.Notifications`).
+- **No Sailfish services.** No journald (Whisperfish logs to stdout),
+  no Sailfish Secrets (upstream doesn't use it either: the database is
+  sqlcipher with an optional password), and no sailfish-qml captcha
+  helper (the captcha page opens in the browser).
 
-- Releases from [OpenRepos](https://openrepos.net/content/rubdos/whisperfish)
-- "Nightly" builds from
-  [the Gitlab Package Registry](https://gitlab.com/whisperfish/whisperfish/-/packages).
+The upstream README is in [README-upstream.md](README-upstream.md).
 
-In most cases, there should be no need to install from Git directly.
-We push regular updates to OpenRepos, when they make sense.
+## What works
 
-Please mind that Whisperfish in still in *beta condition*, which means
-that certain things do not work, other things make the application
-crash, and I've heard reports that beta software can be a cause for
-dogs eating homework. You've been warned. On the other hand, we have
-many people happily using Whisperfish as daily driver, and we make up
-for lacking features in our community support in the aforementioned
-Matrix and IRC room. Please come say hello! We don't bite (we may
-byte), and we don't eat homework.
+| Feature | Status |
+|---|---|
+| Linking as a secondary device (QR code to scan with the Signal app) | The QR code comes from Signal's server and is shown (tested). Finishing a link with a real phone is **not tested yet** |
+| Database with or without a password, unlocking | Tested up to linking |
+| Registering a new main account (phone number, captcha, code) | Implemented, not tested |
+| Conversation list (contacts, groups, note to self, drafts, unread) | Implemented; the layout is tested with made-up data |
+| Reading and sending text messages, in groups too | Implemented, not tested with an account |
+| Attachments: sending (file dialog), showing images, downloading and opening files | Implemented, not tested |
+| Read receipts (sent and shown), delivery ticks, edited marks | Implemented, not tested |
+| New conversation by Signal username | Implemented, not tested (no phone number lookup) |
+| Notifications of new messages (respects the privacy setting) | Implemented, not tested |
+| Hildon application menu, stacked windows, title bar progress | Through Leste's `qt-platform-maemo` |
+| Calls, voice notes, reactions, replies/quotes, stickers, stories, address book, background service, settings page | Not ported |
 
-## Project Status
+Closing the main window quits Whisperfish. There is no background mode
+yet, so messages arrive only while the app is open (Signal keeps them for
+you meanwhile).
 
-This project started as a Go-based SailfishOS client for Signal.
-Version 0.6 (and onwards) is a complete rewrite, and uses
-[libsignal-service](https://github.com/whisperfish/libsignal-service-rs),
-(which then uses [libsignal-client](https://github.com/signalapp/libsignal))
-for better maintainability. You may want to make a
-back-up of your current files if you still come from 0.5. Specifically:
+## Install
 
-- `.local/share/harbour-whisperfish` contains all your data.
-- `.config/harbour-whisperfish` contains the apps configuration.
+Download `whisperfish-leste_*_arm64.deb` from the
+[releases](https://github.com/smatkovi/whisperfish-leste/releases) and,
+as root on the device:
 
-In current releases the paths have changed:
+    apt install ./whisperfish-leste_0.6.0~dev-1_arm64.deb
 
-- `.local/share/be.rubdos/harbour-whisperfish`
-- `.config/be.rubdos/harbour-whisperfish`
+Whisperfish then shows up in the application menu. On first start it
+asks for a database password (or none). Choose "Link to my Signal
+account", then in the Signal app on your phone go to *Settings → Linked
+devices → Link new device* and scan the code. The device is called
+"Whisperfish (Maemo Leste)".
 
-## Features
+The data lives where it does on Sailfish OS:
+`~/.config/be.rubdos/harbour-whisperfish` and
+`~/.local/share/be.rubdos/harbour-whisperfish`.
 
-- [x] Registration
-- [ ] Contact Discovery
-- [x] Direct messages
-- [x] Group messages
-- [ ] Editing messages
-- [x] Sealed sending
-- [x] Voice messages
-- [x] Storing conversations
-- [x] Sending attachments
-- [x] Taking a photo as an attachment
-- [ ] Taking a video as an attachment
-- [x] Encrypted identity and session store
-- [x] Encrypted message store
-- [x] Advanced user settings
-- [x] Multi-Device support (links with Signal Desktop)
-- [ ] Encrypted local attachment store
-- [x] Archiving conversations
-- [x] Muting conversations
-- [ ] Voice calls
-- [ ] Video calls
+## Building
 
-Please search the
-[issue tracker](https://gitlab.com/whisperfish/whisperfish/-/issues) before
-filing any bug report or feature request. Please upvote issues that are
-important to you. We use the vote counter for determining a feature's
-priority.
+The package is cross-compiled on an x86_64 PC against a Debian bookworm
+arm64 sysroot. Maemo Leste daedalus is built on Debian bookworm, with the
+same glibc 2.36 and Qt 5.15.8. You need Rust with the
+`aarch64-unknown-linux-gnu` target, clang, lld, llvm-ar, cmake, perl,
+make and protoc. You also need debootstrap and qemu-user binfmt to create
+the sysroot.
 
-For user-friendly changelog, see [Version history](https://gitlab.com/whisperfish/whisperfish/-/wikis/Version-history#release-notes) on Whisperfish Wiki.
+    sudo leste/cross/make-sysroot.sh /path/to/sysroot
+    LESTE_SYSROOT=/path/to/sysroot leste/build-deb.sh
 
-## Translations
+`leste/cross/env.sh` sets up clang/lld, the qmake stand-in that the Qt
+build scripts query, and pkg-config/CMake for the sysroot. The result is
+`leste/out/whisperfish-leste_<version>_arm64.deb`. The build uses
+`--features leste` (bundled sqlcipher and OpenSSL, no calling).
 
-Whisperfish supports i18n translations and uses
-[Text ID Based Translations](http://doc.qt.io/qt-5/linguist-id-based-i18n.html).
-For an easy way to help translating, you can join on
-[Weblate](https://hosted.weblate.org/engage/whisperfish/).
+## Testing without touching the device's system
 
-## Building Whisperfish
+- `leste/test/chroot-test.sh` runs on the device as root. It installs the
+  package in a chroot of an overlay on a Leste image (read-only lower
+  layer), starts hildon-desktop and Whisperfish on Xvfb with the
+  device's session environment, and takes screenshots after scripted
+  clicks.
+- `leste/test/qemu-preview.sh` runs on the PC. It renders the QML with
+  made-up data (`leste/test/preview`, a QML stand-in for the Rust types)
+  in the arm64 sysroot under qemu-user.
 
-Compiling Whisperfish (often) requires a newer Rust toolchain that Sailfish OS provides.
-Please see [Building from source](doc/building-from-source.md) for instructions. It also contains information about
-some experimental features and building on OBS for Chum.
+## License and credits
 
-## Database
-
-Whisperfish uses SQLCipher to store its data. SQLCipher is essentially SQLite with encryption features.
-Entering a password when registering Whisperfish makes the database encrypted,
-without password it's just a plain SQLite database.
-
-During development it's often handy to have a database or schema at hand.
-If you don't want to mess with your Whisperfish database, or even a copy of it,
-you can create a plain SQLite database with `create-database.sh`.
-
-## Troubleshooting
-
-Typically the first step in troubleshooting is either grabbing
-a screenshot of the issue (visual bugs) or
-[capturing logs](https://gitlab.com/whisperfish/whisperfish/-/wikis/home#debugging-and-logging).
-When sending screenshots mind the privacy of yourself and your contacts --
-[censor your logs](https://gitlab.com/whisperfish/whisperfish/-/wikis/home#censor-your-logs)!
-
-## License
-
-Before Whisperfish 0.6.0-alpha.1, "the Rust port", Whisperfish was
-licensed under the GNU General Public License. Since Whisperfish
-0.6.0-alpha.1, Whisperfish links to AGPLv3 code, and as such is a
-combined work as meant under clause 13 of the GPLv3.
-
-The original GPLv3 licensed code that is still contained in this
-repository, still falls under GPLv3, as per the copyright of Andrew E.
-Bruno. This is the original license statement:
-
-Copyright (C) 2016-2018 Andrew E. Bruno
-
-Whisperfish is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program. If not, see \<<http://www.gnu.org/licenses/>\>.
-
-This is the license statement since 2019, since Whisperfish
-0.6.0-alpha.1.
-
-Copyright (C) 2019-2020 Ruben De Smet, Markus Törnqvist
-
-Whisperfish is free software: you can redistribute it and/or modify it
-under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at
-your option) any later version.
-
-Whisperfish is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
-General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see
-\<<https://www.gnu.org/licenses/>\>.
+Whisperfish is © Ruben De Smet and the Whisperfish contributors, licensed
+under the GNU AGPL v3 (see [LICENSE](LICENSE)). The Maemo Leste port
+(the `leste` directory, `whisperfish/src/leste.rs` and the `leste`
+platform) is under the same license. Signal is a trademark of Signal
+Messenger, LLC; this project is not affiliated with Signal or with the
+Whisperfish project.

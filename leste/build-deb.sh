@@ -44,7 +44,7 @@ mkdir -p "$P/usr/share/icons/hicolor/64x64/apps"
 cp "$SRC/icons/86x86/harbour-whisperfish.png" "$P/usr/share/icons/hicolor/64x64/apps/"
 cp "$SRC/leste/harbour-whisperfish.desktop" "$P/usr/share/applications/hildon/"
 cp "$SRC/LICENSE" "$P/usr/share/doc/whisperfish-leste/copyright"
-cp "$SRC/leste/README.md" "$P/usr/share/doc/whisperfish-leste/README.md"
+cp "$SRC/README.md" "$P/usr/share/doc/whisperfish-leste/README.md"
 
 SIZE=$(du -sk --exclude=DEBIAN "$P" | cut -f1)
 cat > "$P/DEBIAN/control" <<CONTROL

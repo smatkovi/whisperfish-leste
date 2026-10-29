@@ -1,0 +1,155 @@
+# Whisperfish
+
+Whisperfish is a native [Signal](https://www.whispersystems.org/) client
+for [Sailfish OS](https://sailfishos.org/). The user interface is
+heavily based on the jolla-messages application written by Jolla Ltd.
+
+Whisperfish has plenty of features these days and is in a mostly usable state,
+but having a Signal Destop as a linked device is highly recommened.
+Join our development channel on Matrix
+([#whisperfish:rubdos.be](https://matrix.to/#/#whisperfish:rubdos.be))
+or Libera.Chat (#whisperfish) to get in touch, and check
+[our wiki](https://gitlab.com/whisperfish/whisperfish/-/wikis/home) to see
+whether Whisperfish would work for you.
+
+To install, you have two options:
+
+- Releases from [OpenRepos](https://openrepos.net/content/rubdos/whisperfish)
+- "Nightly" builds from
+  [the Gitlab Package Registry](https://gitlab.com/whisperfish/whisperfish/-/packages).
+
+In most cases, there should be no need to install from Git directly.
+We push regular updates to OpenRepos, when they make sense.
+
+Please mind that Whisperfish in still in *beta condition*, which means
+that certain things do not work, other things make the application
+crash, and I've heard reports that beta software can be a cause for
+dogs eating homework. You've been warned. On the other hand, we have
+many people happily using Whisperfish as daily driver, and we make up
+for lacking features in our community support in the aforementioned
+Matrix and IRC room. Please come say hello! We don't bite (we may
+byte), and we don't eat homework.
+
+## Project Status
+
+This project started as a Go-based SailfishOS client for Signal.
+Version 0.6 (and onwards) is a complete rewrite, and uses
+[libsignal-service](https://github.com/whisperfish/libsignal-service-rs),
+(which then uses [libsignal-client](https://github.com/signalapp/libsignal))
+for better maintainability. You may want to make a
+back-up of your current files if you still come from 0.5. Specifically:
+
+- `.local/share/harbour-whisperfish` contains all your data.
+- `.config/harbour-whisperfish` contains the apps configuration.
+
+In current releases the paths have changed:
+
+- `.local/share/be.rubdos/harbour-whisperfish`
+- `.config/be.rubdos/harbour-whisperfish`
+
+## Features
+
+- [x] Registration
+- [ ] Contact Discovery
+- [x] Direct messages
+- [x] Group messages
+- [ ] Editing messages
+- [x] Sealed sending
+- [x] Voice messages
+- [x] Storing conversations
+- [x] Sending attachments
+- [x] Taking a photo as an attachment
+- [ ] Taking a video as an attachment
+- [x] Encrypted identity and session store
+- [x] Encrypted message store
+- [x] Advanced user settings
+- [x] Multi-Device support (links with Signal Desktop)
+- [ ] Encrypted local attachment store
+- [x] Archiving conversations
+- [x] Muting conversations
+- [ ] Voice calls
+- [ ] Video calls
+
+Please search the
+[issue tracker](https://gitlab.com/whisperfish/whisperfish/-/issues) before
+filing any bug report or feature request. Please upvote issues that are
+important to you. We use the vote counter for determining a feature's
+priority.
+
+For user-friendly changelog, see [Version history](https://gitlab.com/whisperfish/whisperfish/-/wikis/Version-history#release-notes) on Whisperfish Wiki.
+
+## Translations
+
+Whisperfish supports i18n translations and uses
+[Text ID Based Translations](http://doc.qt.io/qt-5/linguist-id-based-i18n.html).
+For an easy way to help translating, you can join on
+[Weblate](https://hosted.weblate.org/engage/whisperfish/).
+
+## Building Whisperfish
+
+Compiling Whisperfish (often) requires a newer Rust toolchain that Sailfish OS provides.
+Please see [Building from source](doc/building-from-source.md) for instructions. It also contains information about
+some experimental features and building on OBS for Chum.
+
+## Database
+
+Whisperfish uses SQLCipher to store its data. SQLCipher is essentially SQLite with encryption features.
+Entering a password when registering Whisperfish makes the database encrypted,
+without password it's just a plain SQLite database.
+
+During development it's often handy to have a database or schema at hand.
+If you don't want to mess with your Whisperfish database, or even a copy of it,
+you can create a plain SQLite database with `create-database.sh`.
+
+## Troubleshooting
+
+Typically the first step in troubleshooting is either grabbing
+a screenshot of the issue (visual bugs) or
+[capturing logs](https://gitlab.com/whisperfish/whisperfish/-/wikis/home#debugging-and-logging).
+When sending screenshots mind the privacy of yourself and your contacts --
+[censor your logs](https://gitlab.com/whisperfish/whisperfish/-/wikis/home#censor-your-logs)!
+
+## License
+
+Before Whisperfish 0.6.0-alpha.1, "the Rust port", Whisperfish was
+licensed under the GNU General Public License. Since Whisperfish
+0.6.0-alpha.1, Whisperfish links to AGPLv3 code, and as such is a
+combined work as meant under clause 13 of the GPLv3.
+
+The original GPLv3 licensed code that is still contained in this
+repository, still falls under GPLv3, as per the copyright of Andrew E.
+Bruno. This is the original license statement:
+
+Copyright (C) 2016-2018 Andrew E. Bruno
+
+Whisperfish is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program. If not, see \<<http://www.gnu.org/licenses/>\>.
+
+This is the license statement since 2019, since Whisperfish
+0.6.0-alpha.1.
+
+Copyright (C) 2019-2020 Ruben De Smet, Markus Törnqvist
+
+Whisperfish is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+
+Whisperfish is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see
+\<<https://www.gnu.org/licenses/>\>.
